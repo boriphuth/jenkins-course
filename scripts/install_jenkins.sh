@@ -2,20 +2,17 @@
 
 # this script is only tested on ubuntu xenial
 
-# install docker
-apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-apt-add-repository 'deb https://apt.dockerproject.org/repo ubuntu-xenial main'
-apt-get update
-apt-get install -y docker-engine
-systemctl enable docker
-systemctl start docker
-usermod -aG docker ubuntu
+# install java 8
+sudo apt update
+sudo apt install -y openjdk-8-jdk
 
-# run jenkins
-mkdir -p /var/jenkins_home
-chown -R 1000:1000 /var/jenkins_home/
-docker run -p 8080:8080 -p 50000:50000 -v /var/jenkins_home:/var/jenkins_home -d --name jenkins jenkins/jenkins:lts
+# download jenkins
+wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -
+sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+sudo apt update
+sudo apt install -y jenkins
+systemctl status jenkins
 
-# show endpoint
-echo 'Jenkins installed'
-echo 'You should now be able to access jenkins at: http://'$(curl -s ifconfig.co)':8080'
+# show firewall
+sudo ufw allow 8080
+sudo ufw status
